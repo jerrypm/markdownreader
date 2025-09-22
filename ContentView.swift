@@ -1,3 +1,9 @@
+//  ContentView.swift
+//  MarkdownReader
+//
+//  Idea by Jerrypm create by claude code  on 26/06/25.
+//  Copyright © 2025 JPM. All rights reserved.
+
 import SwiftUI
 
 struct ContentView: View {
@@ -9,9 +15,7 @@ struct ContentView: View {
             SidebarView(
                 files: fileManager.markdownFiles,
                 selectedFile: $selectedFile,
-                onSelectFolder: {
-                    fileManager.selectFolder()
-                }
+                fileManager: fileManager
             )
         } detail: {
             if let selectedFile = selectedFile {
@@ -22,9 +26,7 @@ struct ContentView: View {
                     }
                 )
             } else {
-                EmptyStateView {
-                    fileManager.selectFolder()
-                }
+                EmptyStateView(fileManager: fileManager)
             }
         }
         .onAppear {
@@ -45,10 +47,10 @@ struct ContentView: View {
 }
 
 struct EmptyStateView: View {
-    let onSelectFolder: () -> Void
+    let fileManager: DocumentFileManager
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 20) {
             Image(systemName: "doc.text")
                 .font(.system(size: 64))
                 .foregroundColor(.secondary)
@@ -61,11 +63,41 @@ struct EmptyStateView: View {
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
 
-            Button("Select Folder") {
-                onSelectFolder()
+            VStack(spacing: 12) {
+                Button("Select Folder") {
+                    fileManager.selectFolder()
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+
+                // Show recent folders if available
+                if !fileManager.recentFolders.isEmpty {
+                    Text("or choose from recent:")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 200))], spacing: 8) {
+                        ForEach(fileManager.recentFolders.prefix(3), id: \.self) { folderPath in
+                            Button(action: {
+                                fileManager.loadRecentFolder(folderPath)
+                            }) {
+                                HStack {
+                                    Image(systemName: "folder")
+                                        .foregroundColor(.blue)
+                                    Text(URL(fileURLWithPath: folderPath).lastPathComponent)
+                                        .lineLimit(1)
+                                    Spacer()
+                                }
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(Color.secondary.opacity(0.1))
+                                .cornerRadius(8)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                    }
+                }
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
         }
         .padding()
     }

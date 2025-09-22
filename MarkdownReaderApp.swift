@@ -1,3 +1,9 @@
+//  MarkdownReaderApp.swift
+//  MarkdownReader
+//
+//  Idea by Jerrypm create by claude code  on 26/06/25.
+//  Copyright © 2025 JPM. All rights reserved.
+
 import SwiftUI
 
 @main

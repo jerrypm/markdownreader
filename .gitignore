@@ -1,0 +1,42 @@
+# Build artifacts
+.build/
+*.o
+*.d
+*.dSYM/
+
+# Swift Package Manager
+.swiftpm/
+Package.resolved
+
+# Xcode
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# App bundles (should be built, not tracked)
+*.app
+
+# IDE files
+.vscode/
+.idea/
+
+# Temporary files
+*~
+*.tmp
+*.temp
+
+# Logs
+*.log
+
+# Generated icon files (keep source PNG, but not generated ICNS)
+AppIcon.icns
+
+# Zip files (can be regenerated)
+*.zip

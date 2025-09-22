@@ -1,3 +1,9 @@
+//  Models.swift
+//  MarkdownReader
+//
+//  Idea by Jerrypm create by claude code  on 26/06/25.
+//  Copyright © 2025 JPM. All rights reserved.
+
 import Foundation
 
 struct MarkdownFile: Identifiable, Hashable {
@@ -36,11 +42,18 @@ enum MarkdownElement {
     case heading4(String)
     case paragraph(String)
     case codeBlock(String, String)
+    case inlineCode(String)
     case bulletList([String])
+    case numberedList([String])
+    case blockquote(String)
+    case horizontalRule
     case lineBreak
 }
 
 enum TextComponent {
     case text(String)
     case link(String, String)
+    case bold(String)
+    case italic(String)
+    case inlineCode(String)
 }

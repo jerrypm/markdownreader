@@ -25,7 +25,8 @@ let package = Package(
                 "SwiftCodeView.swift",
                 "Models.swift",
                 "MarkdownParser.swift",
-                "FileManager.swift"
+                "FileManager.swift",
+                "PersistenceManager.swift"
             ]
         )
     ]

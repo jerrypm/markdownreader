@@ -1,3 +1,9 @@
+//  FileManager.swift
+//  MarkdownReader
+//
+//  Idea by Jerrypm create by claude code  on 26/06/25.
+//  Copyright © 2025 JPM. All rights reserved.
+
 import Foundation
 import SwiftUI
 
@@ -5,8 +11,15 @@ class DocumentFileManager: ObservableObject {
     @Published var markdownFiles: [MarkdownFile] = []
     @Published var selectedFile: MarkdownFile?
     @Published var selectedFolderPath: String?
+    @Published var recentFolders: [String] = []
 
     private var basePath: String = ""
+    private let persistenceManager = PersistenceManager.shared
+
+    init() {
+        loadRecentFolders()
+        loadLastSelectedFolder()
+    }
 
     func selectFolder() {
         let panel = NSOpenPanel()
@@ -21,6 +34,10 @@ class DocumentFileManager: ObservableObject {
             if let url = panel.url {
                 selectedFolderPath = url.path
                 loadMarkdownFiles(from: url.path)
+
+                // Save to recent folders
+                persistenceManager.saveRecentFolder(url.path)
+                updateRecentFolders()
             }
         }
     }
@@ -82,5 +99,58 @@ class DocumentFileManager: ObservableObject {
         let targetURL = currentDir.appendingPathComponent(linkPath)
 
         return targetURL.standardized.path
+    }
+
+    // MARK: - Recent Folders Management
+
+    private func loadRecentFolders() {
+        persistenceManager.cleanupInvalidFolders()
+        recentFolders = persistenceManager.getRecentFolders()
+    }
+
+    private func updateRecentFolders() {
+        recentFolders = persistenceManager.getRecentFolders()
+    }
+
+    private func loadLastSelectedFolder() {
+        if let lastFolder = persistenceManager.getLastSelectedFolder(),
+           persistenceManager.validateFolderExists(lastFolder) {
+            selectedFolderPath = lastFolder
+            loadMarkdownFiles(from: lastFolder)
+        }
+    }
+
+    func loadRecentFolder(_ path: String) {
+        if persistenceManager.validateFolderExists(path) {
+            selectedFolderPath = path
+            loadMarkdownFiles(from: path)
+
+            // Move to top of recent list
+            persistenceManager.saveRecentFolder(path)
+            updateRecentFolders()
+        } else {
+            // Remove invalid folder
+            removeRecentFolder(path)
+        }
+    }
+
+    func removeRecentFolder(_ path: String) {
+        persistenceManager.removeRecentFolder(path)
+        updateRecentFolders()
+
+        // If this was the currently selected folder, clear it
+        if selectedFolderPath == path {
+            selectedFolderPath = nil
+            markdownFiles = []
+            selectedFile = nil
+        }
+    }
+
+    func clearAllRecentFolders() {
+        persistenceManager.clearAllRecentFolders()
+        updateRecentFolders()
+        selectedFolderPath = nil
+        markdownFiles = []
+        selectedFile = nil
     }
 }
